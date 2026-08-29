@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Raksha Bandhan Card</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #ecd9b9;
+      --card-bg: #f6e8cc;
+      --accent: #e28c46;
+      --text: #2d2319;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg);
+      font-family: 'Nunito', sans-serif;
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 15px;
+    }
+
+    .app-frame {
+      width: 100%;
+      max-width: 380px;
+      min-height: 560px;
+      background: var(--card-bg);
+      border-radius: 20px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+      border: 3px solid #dfc79e;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .top-hazard-stripe {
+      width: 100px;
+      height: 14px;
+      margin: 12px auto 6px auto;
+      background: repeating-linear-gradient(
+        -45deg,
+        #b8433d,
+        #b8433d 7px,
+        #3b2f2f 7px,
+        #3b2f2f 14px
+      );
+      border-radius: 4px;
+    }
+
+    .back-btn {
+      display: inline-block;
+      align-self: center;
+      background: transparent;
+      border: 1.5px solid #2d2319;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      padding: 3px 12px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    .screen {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+      padding: 12px 22px 20px 22px;
+      text-align: center;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    /* Screen 1: Letter */
+    .letter-title {
+      font-size: 20px;
+      font-weight: 800;
+      text-align: left;
+      margin-bottom: 12px;
+    }
+
+    .letter-body {
+      font-size: 13.5px;
+      line-height: 1.55;
+      text-align: left;
+      font-weight: 600;
+      color: #3b2c1d;
+    }
+
+    .letter-footer {
+      text-align: right;
+      font-size: 11px;
+      margin-top: 15px;
+      font-weight: 700;
+      color: #66523e;
+    }
+
+    .next-btn {
+      background: var(--accent);
+      color: #000;
+      font-weight: 800;
+      font-size: 13px;
+      letter-spacing: 1px;
+      border: 2px solid #2d2319;
+      padding: 8px 24px;
+      border-radius: 20px;
+      margin-left: auto;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    /* Screen 2: Balloons */
+    .game-title {
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .game-subtitle {
+      font-size: 13px;
+      font-weight: 700;
+      margin-top: 4px;
+      color: #4b3d2e;
+    }
+
+    .balloon-canvas {
+      position: relative;
+      flex: 1;
+      min-height: 380px;
+      margin-top: 10px;
+    }
+
+    .balloon-wrapper {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      animation: float 2.5s ease-in-out infinite alternate;
+    }
+
+    .balloon-shape {
+      width: 52px;
+      height: 64px;
+      border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+      box-shadow: inset -4px -4px 6px rgba(0,0,0,0.15), 0 4px 6px rgba(0,0,0,0.1);
+      border: 1.5px solid rgba(0,0,0,0.15);
+    }
+
+    .balloon-string {
+      width: 1px;
+      height: 48px;
+      border-left: 1.5px dashed #4b3d2e;
+      margin-top: 2px;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-8px); }
+    }
+
+    /* Polaroid Modal */
+    .modal {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(45, 35, 25, 0.45);
+      backdrop-filter: blur(2px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      z-index: 10;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .polaroid-card {
+      background: #fffef9;
+      border: 2px solid #2d2319;
+      border-radius: 4px;
+      padding: 10px 10px 16px 10px;
+      width: 100%;
+      max-width: 260px;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+      text-align: center;
+    }
+
+    .polaroid-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border: 1.5px solid #2d2319;
+      border-radius: 2px;
+      background: #eee;
+    }
+
+    .polaroid-card p {
+      font-family: 'Caveat', cursive;
+      font-size: 19px;
+      margin: 10px 0 12px 0;
+      color: #2d2319;
+      line-height: 1.2;
+    }
+
+    .action-btn {
+      background: var(--accent);
+      color: #000;
+      border: 2px solid #2d2319;
+      border-radius: 20px;
+      padding: 7px 18px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* Screen 3: Final Polaroid Collage */
+    .collage-container {
+      position: relative;
+      width: 100%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .badge-tag {
+      background: #f7ca68;
+      border: 1.5px solid #2d2319;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 800;
+      position: absolute;
+      z-index: 2;
+    }
+
+    .badge-pink {
+      background: #f1959b;
+    }
+
+    .final-polaroid {
+      background: #fffef9;
+      border: 2px solid #2d2319;
+      border-radius: 4px;
+      padding: 8px 8px 14px 8px;
+      width: 210px;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+    }
+
+    .final-polaroid img {
+      width: 100%;
+      height: 130px;
+      object-fit: cover;
+      border: 1.5px solid #2d2319;
+    }
+
+    .final-polaroid p {
+      font-family: 'Caveat', cursive;
+      font-size: 15px;
+      margin-top: 6px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-frame">
+    <div class="top-hazard-stripe"></div>
+    <button class="back-btn">&larr; BACK TO FORM</button>
+
+    <!-- SCREEN 1: LETTER -->
+    <div class="screen active" id="screen-letter">
+      <div class="letter-title">Dear Annaya,</div>
+      <div class="letter-body">
+        You're not just my brother, you're like a second mother to me. 💖 U always encourages me, supports me, and believes in me in everything I do, whether it's my studies or anything else. Whenever I ask you for something, U never think twice about giving me permission, sending me on trips, buying me whatever I want, or even giving me pocket money 😭💖 U always want me to experience and enjoy everything. U may not always show your love, but I know how much you care about me through everything you do. U always making sure I get the best of everything
+        <br><br>
+        Love you always ❤️
+      </div>
+      <div class="letter-footer">- sonuu</div>
+      <button class="next-btn" onclick="openScreen('screen-balloons')">NEXT</button>
+    </div>
+
+    <!-- SCREEN 2: BALLOONS -->
+    <div class="screen" id="screen-balloons">
+      <div class="game-title">Pop every balloon 🎈</div>
+      <div class="game-subtitle" id="game-status">Each one holds something true</div>
+
+      <div class="balloon-canvas" id="balloon-board"></div>
+    </div>
+
+    <!-- SCREEN 3: SURPRISE REVEAL -->
+    <div class="screen" id="screen-surprise">
+      <div style="font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">
+        A Little Rakhi, A Lot of Love
+      </div>
+      <div style="font-size: 12px; font-weight: 700; color: #66523e; margin-top: 2px;">
+        always find its way back
+      </div>
+
+      <div class="collage-container">
+        <!-- Top Left Sticker -->
+        <div class="badge-tag" style="top: -6px; left: 10px; transform: rotate(-8deg);">
+          always got your back
+        </div>
+
+        <!-- Top Right Sticker -->
+        <div class="badge-tag badge-pink" style="top: 0px; right: 10px; transform: rotate(6deg);">
+          tied with love ❤️
+        </div>
+
+        <!-- Photo 1 -->
+        <div class="final-polaroid" style="transform: rotate(1deg);">
+          <img src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=500&q=80" alt="Memory 1" />
+        </div>
+
+        <!-- Bottom Left Sticker -->
+        <div class="badge-tag" style="bottom: 120px; left: 12px; transform: rotate(-5deg);">
+          forever my person
+        </div>
+
+        <!-- Photo 2 -->
+        <div class="final-polaroid" style="transform: rotate(-1.5deg);">
+          <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=500&q=80" alt="Memory 2" />
+          <p>sonuu & Annaya ✨</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- POLAROID POPUP MODAL -->
+    <div class="modal" id="popup-modal">
+      <div class="polaroid-card">
+        <img id="popup-img" src="" alt="Popup Memory" />
+        <p id="popup-caption"></p>
+        <button class="action-btn" id="modal-action-btn" onclick="nextBalloonPopup()">
+          POP ANOTHER 🪄
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Exact balloon positions, colors, pictures, and sentences from the video
+    const cards = [
+      {
+        color: '#dba43e', // Orange-Yellow (Top Left)
+        left: 20,
+        top: 25,
+        text: "So glad you're my annaya 🤍",
+        // Chhota Bheem & Chutki Rakhi Scene
+        image: "https://i.pinimg.com/736x/8d/8a/75/8d8a7576f39ee48fc8e1291fae29c0a9.jpg"
+      },
+      {
+        color: '#58161f', // Dark Maroon (Top Right)
+        left: 240,
+        top: 20,
+        text: "You make hard days softer without even trying",
+        // Mr. Bean waving / smiling
+        image: "https://i.pinimg.com/736x/91/9f/83/919f83ff444d6232ee8a6c8e3aa7fec5.jpg"
+      },
+      {
+        color: '#e57538', // Orange (Middle Left)
+        left: 120,
+        top: 110,
+        text: "This is just a little reminder that I've got your back, annaya.",
+        // Dancing cute kittens
+        image: "https://media.giphy.com/media/unQ3IJU2RG7DO/giphy.gif"
+      },
+      {
+        color: '#b8433d', // Red (Middle Right)
+        left: 250,
+        top: 110,
+        text: "Here's to more us, more chaos, more love",
+        // Hike App Happy Raksha Bandhan sticker
+        image: "https://i.pinimg.com/736x/5b/c2/ea/5bc2eab1b8d25ca6b0553767850dfd73.jpg"
+      },
+      {
+        color: '#dba43e', // Orange-Yellow (Bottom Center)
+        left: 170,
+        top: 210,
+        text: "Every fight, every fix — worth it",
+        // Shin-chan & Himawari puffy cheeks fight scene
+        image: "https://i.pinimg.com/736x/32/38/c2/3238c2efcfdb1b2723c21a44f84501a3.jpg"
+      }
+    ];
+
+    let poppedCount = 0;
+    const board = document.getElementById('balloon-board');
+
+    cards.forEach((item, index) => {
+      const balloon = document.createElement('div');
+      balloon.className = 'balloon-wrapper';
+      balloon.style.left = item.left + 'px';
+      balloon.style.top = item.top + 'px';
+      balloon.style.animationDelay = (index * 0.35) + 's';
+
+      balloon.innerHTML = `
+        <div class="balloon-shape" style="background-color: ${item.color};"></div>
+        <div class="balloon-string"></div>
+      `;
+
+      balloon.onclick = () => pop(balloon, item);
+      board.appendChild(balloon);
+    });
+
+    function pop(element, data) {
+      element.style.visibility = 'hidden';
+      poppedCount++;
+
+      document.getElementById('popup-img').src = data.image;
+      document.getElementById('popup-caption').innerText = data.text;
+
+      const actionBtn = document.getElementById('modal-action-btn');
+      const status = document.getElementById('game-status');
+
+      if (poppedCount < cards.length) {
+        status.innerText = (cards.length - poppedCount) + ' left to pop';
+        actionBtn.innerText = 'POP ANOTHER 🪄';
+      } else {
+        status.innerText = '0 left to pop';
+        actionBtn.innerText = 'SEE THE SURPRISE ✨';
+        actionBtn.onclick = () => {
+          closeModal();
+          openScreen('screen-surprise');
+        };
+      }
+
+      document.getElementById('popup-modal').classList.add('active');
+    }
+
+    function nextBalloonPopup() {
+      closeModal();
+    }
+
+    function closeModal() {
+      document.getElementById('popup-modal').classList.remove('active');
+    }
+
+    function openScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+    }
+  </script>
+</body>
+</html>
